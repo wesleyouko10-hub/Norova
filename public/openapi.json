@@ -1,0 +1,12 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "Northstar Intelligence API", "version": "1.0.0", "description": "Source-aware company, people, enrichment, and signal intelligence."},
+  "servers": [{"url": "https://api.northstar.dev/v1"}],
+  "security": [{"bearerAuth": []}],
+  "components": {"securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer"}}},
+  "paths": {
+    "/companies/search": {"get": {"summary": "Search companies", "parameters": [{"name": "q", "in": "query", "schema": {"type": "string"}}, {"name": "cursor", "in": "query", "schema": {"type": "string"}}], "responses": {"200": {"description": "Company results"}, "429": {"description": "Rate limit exceeded"}}}},
+    "/people/search": {"get": {"summary": "Search people", "responses": {"200": {"description": "People results"}, "429": {"description": "Rate limit exceeded"}}}},
+    "/usage": {"get": {"summary": "Get API usage", "responses": {"200": {"description": "Usage summary"}}}}
+  }
+}
