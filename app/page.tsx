@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Activity,
   ArrowUpRight,
@@ -40,13 +40,19 @@ const navigation = [
 ]
 
 const workspaceNavigation = [
-  { label: 'API', icon: KeyRound },
-  { label: 'Integrations', icon: Zap },
-  { label: 'Usage', icon: Gauge },
-  { label: 'Team', icon: Users },
-  { label: 'Billing', icon: BarChart3 },
-  { label: 'Settings', icon: Settings2 },
+  { label: 'API', icon: KeyRound, route: '/api-portal' },
+  { label: 'Integrations', icon: Zap, route: '/integrations' },
+  { label: 'Usage', icon: Gauge, route: '/usage' },
+  { label: 'Team', icon: Users, route: '/team' },
+  { label: 'Billing', icon: BarChart3, route: '/billing' },
+  { label: 'Settings', icon: Settings2, route: '/settings' },
 ]
+
+const routeByLabel: Record<string, string> = {
+  Overview: '/', Companies: '/companies', People: '/people', Search: '/companies', Lists: '/lists',
+  Enrichment: '/enrichment', 'AI Research': '/research', Signals: '/signals', API: '/api-portal',
+  Integrations: '/integrations', Usage: '/usage', Team: '/team', Billing: '/billing', Settings: '/settings',
+}
 
 const metrics = [
   { label: 'Credits remaining', value: '—', detail: 'Connect your workspace to begin', icon: Zap },
@@ -58,6 +64,16 @@ const metrics = [
 export default function Page() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [activeNav, setActiveNav] = useState('Overview')
+
+  useEffect(() => {
+    const current = Object.entries(routeByLabel).find(([, route]) => route === window.location.pathname)
+    if (current) setActiveNav(current[0])
+  }, [])
+
+  const goTo = (label: string) => {
+    const route = routeByLabel[label]
+    if (route) window.location.assign(route)
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -80,12 +96,12 @@ export default function Page() {
               </button>
             </div>
             <nav aria-label="Primary navigation" className="flex flex-col gap-0.5">
-              {navigation.map((item) => <NavItem key={item.label} {...item} active={activeNav === item.label} onClick={() => { setActiveNav(item.label); setMobileNavOpen(false) }} />)}
+              {navigation.map((item) => <NavItem key={item.label} {...item} active={activeNav === item.label} onClick={() => { setMobileNavOpen(false); goTo(item.label) }} />)}
             </nav>
             <div>
               <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Workspace tools</p>
               <nav aria-label="Workspace tools" className="flex flex-col gap-0.5">
-                {workspaceNavigation.map((item) => <NavItem key={item.label} {...item} active={activeNav === item.label} onClick={() => { setActiveNav(item.label); setMobileNavOpen(false) }} />)}
+                {workspaceNavigation.map((item) => <NavItem key={item.label} {...item} active={activeNav === item.label} onClick={() => { setMobileNavOpen(false); goTo(item.label) }} />)}
               </nav>
             </div>
           </div>
@@ -97,11 +113,11 @@ export default function Page() {
         <div className="min-w-0 flex-1">
           <header className="flex h-16 items-center justify-between border-b bg-card px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3"><button className="flex size-10 items-center justify-center rounded-md border lg:hidden" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation"><Menu className="size-4" /></button><div className="hidden items-center gap-2 text-sm text-muted-foreground sm:flex"><span>Workspace</span><span>/</span><span className="text-foreground">{activeNav}</span></div><span className="text-sm font-medium sm:hidden">{activeNav}</span></div>
-            <div className="flex items-center gap-1"><button className="hidden h-9 items-center gap-2 rounded-md border px-3 text-xs text-muted-foreground hover:bg-muted sm:flex"><Search className="size-3.5" /> Search <kbd className="rounded border bg-muted px-1.5 py-0.5 text-[10px]">/</kbd></button><button className="flex size-10 items-center justify-center rounded-md text-muted-foreground hover:bg-muted" aria-label="Help"><CircleHelp className="size-4" /></button><button className="relative flex size-10 items-center justify-center rounded-md text-muted-foreground hover:bg-muted" aria-label="Notifications"><Bell className="size-4" /><span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-foreground" /></button></div>
+            <div className="flex items-center gap-1"><button onClick={() => goTo('Search')} className="hidden h-9 items-center gap-2 rounded-md border px-3 text-xs text-muted-foreground hover:bg-muted sm:flex"><Search className="size-3.5" /> Search <kbd className="rounded border bg-muted px-1.5 py-0.5 text-[10px]">/</kbd></button><button className="flex size-10 items-center justify-center rounded-md text-muted-foreground hover:bg-muted" aria-label="Help"><CircleHelp className="size-4" /></button><button className="relative flex size-10 items-center justify-center rounded-md text-muted-foreground hover:bg-muted" aria-label="Notifications"><Bell className="size-4" /><span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-foreground" /></button></div>
           </header>
 
           <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
-            <div className="flex flex-col gap-5 border-b pb-7 sm:flex-row sm:items-end sm:justify-between"><div><p className="mb-2 text-sm text-muted-foreground">Wednesday, September 24, 2026</p><h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Good morning, Jordan</h1><p className="mt-2 max-w-xl text-sm text-muted-foreground">Your intelligence workspace is ready. Start with a search to discover your next opportunity.</p></div><button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-foreground px-4 text-sm font-medium text-background hover:opacity-90"><Plus className="size-4" /> New search</button></div>
+            <div className="flex flex-col gap-5 border-b pb-7 sm:flex-row sm:items-end sm:justify-between"><div><p className="mb-2 text-sm text-muted-foreground">Wednesday, September 24, 2026</p><h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Good morning, Jordan</h1><p className="mt-2 max-w-xl text-sm text-muted-foreground">Your intelligence workspace is ready. Start with a search to discover your next opportunity.</p></div><button onClick={() => goTo('Search')} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-foreground px-4 text-sm font-medium text-background hover:opacity-90"><Plus className="size-4" /> New search</button></div>
 
             <section aria-labelledby="metrics-heading" className="mt-7"><h2 id="metrics-heading" className="sr-only">Workspace metrics</h2><div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 xl:grid-cols-4">{metrics.map((metric) => <div key={metric.label} className="bg-card p-5"><div className="flex items-center justify-between"><span className="text-sm text-muted-foreground">{metric.label}</span><metric.icon className="size-4 text-muted-foreground" /></div><p className="mt-5 text-2xl font-semibold tracking-tight">{metric.value}</p><p className="mt-1 text-xs text-muted-foreground">{metric.detail}</p></div>)}</div></section>
 
